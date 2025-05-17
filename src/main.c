@@ -4,8 +4,9 @@
 #include <ctype.h>
 #include <string.h>
 #include <options.h>
+#include <io.h>
 #include <morse.h>
-
+/*gcc -I./include -o morse src/main.c src/morse.c src/options.c*/
 
 
 //main loop
@@ -23,7 +24,8 @@ int main (int argc, char *argv[]){
             switch(c){
                 case 'e':
                     if (!encode_decode_flag){
-                        morse_to_text(argv[2]);
+                        //morse_to_text(argv[2]);
+                        input_source()
                     }
                     else{
                         error_text();

@@ -2,6 +2,7 @@
 #define MORSE_H
 
 //consists of for example char 'A' ans string ".-" 
+
 typedef struct {
     const char character;
     const char *morse_text;

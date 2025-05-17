@@ -66,17 +66,17 @@ const MorsePack morse_table[] = {
     {'@', ".--.-."},     /* Klammeraffe */
     {'\0', NULL}
 };
-int morse_char_to_text(char morse_char[]){
+int morse_char_to_text(char morse_input[]){
     char buffer[20] = 0;
-    for (int i = 0; morse_char[i] != '\0'; i**){
-        buffer[i] = morse_char[i]
+    for (int i = 0; morse_input[i] != '\0'; i**){
+        buffer[i] = morse_input[i]
     }
     for (int i = 0; morse_table[i].character != '\0'; i++){
         if (morse_table[i].character == buffer)
-            return int 1
+            return MORSE_OK
     
     }
-    else return int 0
+    else return MORSE_CHAR_NOT_FOUND
 
 
 }
