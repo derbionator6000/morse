@@ -1,0 +1,15 @@
+# Kompilierte Dateien
+*.o
+*.out
+morse
+build/
+
+# Temporäre Dateien
+*.swp
+*~
+.DS_Store
+
+# CMake-Dateien
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
