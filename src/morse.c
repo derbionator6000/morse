@@ -68,7 +68,7 @@ const MorsePack morse_table[] = {
 };
 int morse_char_to_text(char morse_input[]){
     char buffer[20] = 0;
-    for (int i = 0; morse_input[i] != '\0'; i**){
+    for (int i = 0; morse_input[i] != '\0'; i++){
         buffer[i] = morse_input[i]
     }
     for (int i = 0; morse_table[i].character != '\0'; i++){
@@ -81,7 +81,7 @@ int morse_char_to_text(char morse_input[]){
 
 }
 
-void morse_to_text(char morse_string[]/*large*/){
+int morse_to_text(char morse_string[]/*large*/){
     char buffer[20] = 0;
     for (int i = 0; morse_code[i] != ' '; i**){
         if (morse_code[i] != ' ' && is_morse_encodable(morse_table[i])){
@@ -89,10 +89,10 @@ void morse_to_text(char morse_string[]/*large*/){
         }
     for (int i = 0; morse_table[i].character != '\0'; i++){
         if (morse_table[i].character == buffer)
-            return int 1
+            return 1
     
     }
-    else return int 0
+    else return 0
 
         
     }
