@@ -13,7 +13,8 @@
 int main (int argc, char *argv[]){
     int optindex = 0;
     int c = 0;
-    static int encode_decode_flag = 0;
+    static int encode_flag = 2;
+    static int decode_flag = 0;
 
     if (argc < 2){
         puts("see -h or --help for options");
@@ -23,16 +24,21 @@ int main (int argc, char *argv[]){
         while((c = getopt_long(argc,argv,"ho:e::d::",longopts,&optindex)) >= 0){
             switch(c){
                 case 'e':
-                    if (!encode_decode_flag){
-                        //morse_to_text(argv[2]);
-                        input_source()
+                    if (decode_flag != 1){
+                        encode_flag = 1;
+                        /*FILE *file = fopen("output.txt", "w");
+                        file_text_to_morse(argv, argc, file);
+                        */
                     }
                     else{
                         error_text();
                     }
                     break;
                 case 'd':
-                    if (!encode_decode_flag){
+                    if (encode_flag != 1){
+                        decode_flag = 1;
+
+                        
 
                     }
                     else{
@@ -43,6 +49,14 @@ int main (int argc, char *argv[]){
                     help_text();
                     break;
                 case 'o':
+                    FILE *output_file = fopen(optarg, "w");
+                    printf("%s", optarg);
+                    if (output_file == NULL){
+                        printf("%s ist keine Datei\n", optarg);
+                        exit(EXIT_FAILURE);
+                    }
+                    file_text_to_morse(argv,argc,output_file);
+                    if (output_file != NULL) fclose(output_file);
                     break;
                 case 1:
                     info_text();
@@ -52,7 +66,25 @@ int main (int argc, char *argv[]){
 
             }
         }
+    /*
+    if (encode_flag == 1){
+        int source = input_source(argc,argv);
+        switch (source){
+            case 0:
+            case 1:
+            case 2:
+        }
+    }
+    else if (decode_flag == 1){
+        int source = input_source(argc,argv);
+        switch (source){
+            case 0:
+            case 1:
+            case 2:
+        }
+    }*/
     exit(EXIT_SUCCESS);
+
 
 
 

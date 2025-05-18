@@ -3,14 +3,14 @@
 
 //consists of for example char 'A' ans string ".-" 
 
-typedef struct {
+typedef struct{
     const char character;
     const char *morse_text;
 } MorsePack;
 
 extern const MorsePack morse_table[];
 
-typedef struct {
+typedef struct{
     //configs
     int encode_mode;       /* 1 = encode, 0 = decode */
     int slash_wordspacer;  /* 1 = verwende "/" als Worttrenner */
@@ -39,12 +39,9 @@ typedef struct {
  #define MORSE_CHAR_NOT_FOUND '*'
 
 //MORSE FUNCTIONS
-void morse_string_to_text(char morse_code[]);
-int morse_char_to_text();
-int text_char_to_morse();
-int text_string_to_morse();
-int is_morse_encodable(char c);
-int is_text_decodable(char c);
-int cat_text();
+void file_text_to_morse(char *argv[], int argc, FILE *output_file);
+const char *char_to_morse(char c);
+void pipe_text_to_morse();
+void normal_text_to_morse();
 
 #endif
