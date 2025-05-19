@@ -127,11 +127,14 @@ void file_text_to_morse(char *argv[], int argc, FILE *output_file){
         if (argv[i][0] != '-'){
             FILE *file = fopen(argv[i], "r");
             //break;
+            if (is_pipe_input()){
+                file = stdin;
+            }
             if (file){
-                while (fgets(buffer_input, sizeof(buffer_input), file)){
+                buffer_input[BUFFER_TEXT-1] = '\0';
+                while (fgets(buffer_input, BUFFER_TEXT, file)){
                     int pos = 0;
                     buffer_output[0] = '\0';
-                    //buffer_input[0] = '\0';
                     for (int j = 0; j < strlen(buffer_input); j++){
                         const char *morse_code = char_to_morse(buffer_input[j]);
                         if (morse_code == NULL) continue;
@@ -158,6 +161,39 @@ void file_text_to_morse(char *argv[], int argc, FILE *output_file){
             }
         }
 }
+void process_text(char *argv[], int argc){
+
+}
+void standard_text_to_morse(char *str){
+    if (str == NULL) return;
+    char buffer_input[BUFFER_TEXT];
+    char buffer_output[BUFFER_MORSE];
+    FILE *output_stream = stdout;
+
+    strncpy(buffer_input, str, BUFFER_TEXT - 1);
+    buffer_input[BUFFER_TEXT - 1] = '\0';
+    int pos = 0;
+    buffer_output[0] = '\0';
+    for (int j = 0; j < strlen(buffer_input); j++){
+        const char *morse_code = char_to_morse(buffer_input[j]);
+        if (morse_code == NULL) continue;
+        int k = 0;
+        while (morse_code[k] != '\0' && pos < BUFFER_MORSE -2){
+            buffer_output[pos++] = morse_code[k++];
+        }
+        if (pos < BUFFER_MORSE - 1 && morse_code[k-1] != ' ') {
+            buffer_output[pos++] = ' ';
+        }
+        buffer_output[pos] = '\0';  
+    }
+    if (pos > 0){
+        fprintf(output_stream, "%s\n", buffer_output);
+        //fflush(output_stream);
+    } 
+    
+}
+
+
 
     
 /*
@@ -185,5 +221,53 @@ const char *char_to_morse(char c){
     return "*";
 
 }
+
+const char *morse_to_char(*char c){
+    c = toupper(c);
+    if (c == '\n' || c == '\r')
+    {
+        c = '\0';
+        return NULL; //signalisiert string Ende
+    }
+    if (c == ' ') return "  ";
+    for (int i = 0; morse_table[i].character != '\0'; i++){
+        if (morse_table[i].character == c){
+            //printf("\n%s", morse_table[i].morse_text);
+            return morse_table[i].morse_text;
+        }
+}
+    return "*";
+
+}
+
+void standard_morse_to_text(char *str){
+    if (str == NULL) return;
+    char buffer_input[BUFFER_TEXT];
+    char buffer_output[BUFFER_MORSE];
+    FILE *output_stream = stdout;
+
+    strncpy(buffer_input, str, BUFFER_TEXT - 1);
+    buffer_input[BUFFER_TEXT - 1] = '\0';
+    int pos = 0;
+    buffer_output[0] = '\0';
+    for (int j = 0; j < strlen(buffer_input); j++){
+        const char *morse_code = char_to_morse(buffer_input[j]);
+        if (morse_code == NULL) continue;
+        int k = 0;
+        while (morse_code[k] != '\0' && pos < BUFFER_MORSE -2){
+            buffer_output[pos++] = morse_code[k++];
+        }
+        if (pos < BUFFER_MORSE - 1 && morse_code[k-1] != ' ') {
+            buffer_output[pos++] = ' ';
+        }
+        buffer_output[pos] = '\0';  
+    }
+    if (pos > 0){
+        fprintf(output_stream, "%s\n", buffer_output);
+        //fflush(output_stream);
+    } 
+    
+}
+
     
 
