@@ -48,3 +48,22 @@ int input_source(int argc, char *argv[]){
     if (is_direct_input()) return INPUT_DEFAULT;
     
 }
+char *read_file(char *filename){
+    FILE* file = fopen(filename, "rb");
+    if (file == NULL) return NULL;
+    
+    // Dateigröße ermitteln
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    
+    //for '/0' 
+    char* buffer = malloc(file_size + 1);
+
+    size_t read_size = fread(buffer, 1, file_size, file);
+    fclose(file);
+    buffer[file_size] = '\0';
+    return buffer;
+    
+
+}

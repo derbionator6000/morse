@@ -14,31 +14,40 @@ int main (int argc, char *argv[]){
     int optindex = 0;
     int c = 0;
     char *arg = NULL;
+    FILE *output_stream = stdout;
     static int encode_flag = 2;
     static int decode_flag = 0;
+    static int encode_decode_flag = 0;
+    static int option_flag = 0;
 
     if (argc < 2){
         puts("see -h or --help for options");
         exit(EXIT_FAILURE);
     }
-    else
-        while((c = getopt_long(argc,argv,"ho:e::d::",longopts,&optindex)) != -1){
+    else{
+        while((c = getopt_long(argc,argv,"ho:ed",longopts,&optindex)) != -1){
+            option_flag++;
             switch(c){
                 case 'e':
-                    if (decode_flag != 1){
-                        encode_flag = 1;
-                        arg = optarg;
-                        printf("das argument: %s", optarg);
-                    }
+                    if (!decode_flag && encode_decode_flag == 0){
+                        encode_flag = 1; 
+                        encode_decode_flag = 1;
+                        arg = argv[optind];
+                        printf("CASE ENCODE");
+                        }
+                    
                     else{
                         error_text();
                     }
                     break;
                 case 'd':
-                    if (encode_flag != 1){
+                    if (encode_flag != 1 && encode_decode_flag == 0){
+                        encode_decode_flag = 1;
                         decode_flag = 1;
-                        arg = optarg;
-                    }
+                        encode_flag = 0;
+                        arg = argv[optind];
+                        printf("CASE DECODE");
+                       }
                     else{
                         error_text();                    
                     }
@@ -47,71 +56,83 @@ int main (int argc, char *argv[]){
                     help_text();
                     break;
                 case 'o':
-                    FILE *output_file = fopen(optarg, "w");
-                    printf("%s", optarg);
+                    
+                    printf("optind: %s", optarg);
+                    FILE *output_file = fopen(optarg, "w");;
                     if (output_file == NULL){
                         printf("%s is not a file!\n", optarg);
                         exit(EXIT_FAILURE);
                     }
-                    if (encode_flag){
-                        file_text_to_morse(argv,argc,NULL); //output_file kann man hier reinschreiben
+                    if (output_file != NULL) {
+                        printf("OUTPUT angepasst");
+                        output_stream = output_file;
                     }
-                    else{
-                        //file_morse_to_text(argv,argc,output_file);
-                    }
-                    if (output_file != NULL) fclose(output_file);
                     break;
                 case 1:
                     info_text();
                     break;
+                case '?':
+                    break;
+
                 default:
-                arg = optarg;
                     abort();
 
-            }
+            
         
         }
+        }
+    }
     if (encode_flag){
-        int c = input_source(argc, argv);
-        printf("YAY, HIER %d", c);
-        char buffer[BUFFER_TEXT];
-        switch (c){
-            case 0:
-                standard_text_to_morse(arg);
-            case 1:
-                standard_text_to_morse(fgets(buffer, BUFFER_TEXT, stdin));
-            case 2:
-                FILE *file = fopen(arg, "r");
-                printf("die Datei: %s", arg);
-                if (file == NULL){
-                    printf("File: %s empty or not processable", optarg);
-                    exit(EXIT_FAILURE);
-                }
-                standard_text_to_morse(fgets(buffer, BUFFER_TEXT, file));
-                fclose(file);
+        printf("encode loop");
+        char buffer[1000000] = {0}; 
+        char *text = buffer;
+        if (option_flag == 0) arg = argv[1];
+        if (arg != NULL){
+            text = read_file(arg);
+            standard_text_to_morse(text, output_stream);
+            if (output_stream != stdout) fclose(output_stream);
+            free(text);
+            exit(EXIT_SUCCESS);
+        }
+        else if (is_pipe_input()){
+            while (fgets(text, 10000, stdin) != NULL) {
+            standard_text_to_morse(text, output_stream);
+            if (output_stream != stdout) fclose(output_stream);
+        }}
+        else{
+        fprintf(stderr, "Input is not a file");
+        }
+        
+        exit(EXIT_SUCCESS);
 
         }
-    }
+    
     else if (decode_flag == 1){
+        printf("decode loop");
+        char buffer[1000000] = {0}; 
+        char *text = buffer;
+        if (option_flag == 0) arg = argv[1];
+        if (arg != NULL){
+            text = read_file(arg);
+            standard_morse_to_text(text, output_stream);
+            if (output_stream != stdout) fclose(output_stream);
+            free(text);
+            exit(EXIT_SUCCESS);
+        }
+        else if (is_pipe_input()){
+            while (fgets(text, 10000, stdin) != NULL) {
+            standard_morse_to_text(text, output_stream);
+            if (output_stream != stdout) fclose(output_stream);
+        }}
+        else{
+        fprintf(stderr, "Input is not a file");
+        }
         
-    }
-    /*
-    if (encode_flag == 1){
-        int source = input_source(argc,argv);
-        switch (source){
-            case 0:
-            case 1:
-            case 2:
+        exit(EXIT_SUCCESS);
+
         }
-    }
-    else if (decode_flag == 1){
-        int source = input_source(argc,argv);
-        switch (source){
-            case 0:
-            case 1:
-            case 2:
-        }
-    }*/
+
+
     exit(EXIT_SUCCESS);
 
 

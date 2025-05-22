@@ -41,7 +41,11 @@ typedef struct{
 //MORSE FUNCTIONS
 void file_text_to_morse(char *argv[], int argc, FILE *output_file);
 const char *char_to_morse(char c);
-void standard_text_to_morse(char *str);
+void standard_text_to_morse(char *str, FILE *output_file);
+const char morse_to_char(char *c);
+void standard_morse_to_text(char *str, FILE *output_file);
+
+
 void pipe_text_to_morse();
 void normal_text_to_morse();
 

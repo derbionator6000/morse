@@ -164,34 +164,35 @@ void file_text_to_morse(char *argv[], int argc, FILE *output_file){
 void process_text(char *argv[], int argc){
 
 }
-void standard_text_to_morse(char *str){
-    if (str == NULL) return;
-    char buffer_input[BUFFER_TEXT];
-    char buffer_output[BUFFER_MORSE];
-    FILE *output_stream = stdout;
 
-    strncpy(buffer_input, str, BUFFER_TEXT - 1);
-    buffer_input[BUFFER_TEXT - 1] = '\0';
+void standard_text_to_morse(char *str, FILE *output_file){
+    
+    if (str == NULL) return;
+    size_t str_len = strlen(str);
+    size_t output_size = str_len * 9 + 1;
+    char buffer_output[output_size]; //longest morse is 6, so + 3 spaces = 9 + '\0' terminator
+    FILE *output_stream = stdout;
+    if (output_file != stdout) output_stream = output_file;
     int pos = 0;
     buffer_output[0] = '\0';
-    for (int j = 0; j < strlen(buffer_input); j++){
-        const char *morse_code = char_to_morse(buffer_input[j]);
+    for (int j = 0; j < str_len; j++){
+        const char *morse_code = char_to_morse(str[j]);
         if (morse_code == NULL) continue;
         int k = 0;
-        while (morse_code[k] != '\0' && pos < BUFFER_MORSE -2){
+        while (morse_code[k] != '\0' && pos < output_size -2){
             buffer_output[pos++] = morse_code[k++];
         }
-        if (pos < BUFFER_MORSE - 1 && morse_code[k-1] != ' ') {
+        if (pos < output_size - 1 && morse_code[k-1] != ' ') {
             buffer_output[pos++] = ' ';
         }
         buffer_output[pos] = '\0';  
     }
     if (pos > 0){
         fprintf(output_stream, "%s\n", buffer_output);
-        //fflush(output_stream);
     } 
     
 }
+
 
 
 
@@ -208,8 +209,8 @@ const char *char_to_morse(char c){
     c = toupper(c);
     if (c == '\n' || c == '\r')
     {
-        c = '\0';
-        return NULL; //signalisiert string Ende
+        return "  \0";
+         //signalisiert string Ende
     }
     if (c == ' ') return "  ";
     for (int i = 0; morse_table[i].character != '\0'; i++){
@@ -222,52 +223,67 @@ const char *char_to_morse(char c){
 
 }
 
-const char *morse_to_char(*char c){
-    c = toupper(c);
-    if (c == '\n' || c == '\r')
-    {
-        c = '\0';
-        return NULL; //signalisiert string Ende
-    }
-    if (c == ' ') return "  ";
-    for (int i = 0; morse_table[i].character != '\0'; i++){
-        if (morse_table[i].character == c){
+const char morse_to_char(char *c){
+    //printf("STring Lände: %ld", strlen(c));
+    //printf("Der STring kommt an:%s", c);
+    for (int i = 0; morse_table[i].morse_text != NULL; i++){
+        if (strcmp(morse_table[i].morse_text, c) == 0){
+            //printf("%c", morse_table[i].character);
             //printf("\n%s", morse_table[i].morse_text);
-            return morse_table[i].morse_text;
+            return morse_table[i].character;
         }
 }
-    return "*";
+    return ' ';
 
 }
 
-void standard_morse_to_text(char *str){
+
+void standard_morse_to_text(char *str, FILE *output_file){
     if (str == NULL) return;
-    char buffer_input[BUFFER_TEXT];
-    char buffer_output[BUFFER_MORSE];
+    size_t str_len = strlen(str)+1;
+    int space_count = 0;
+    char str_whole_morse[10] = {0};
+    size_t output_size = (str_len / 2) + 1; //is shorter
+    char buffer_output[output_size]; //longest morse is 6, so + 3 spaces = 9 + '\0' terminator
+    memset(buffer_output, 0, output_size);
     FILE *output_stream = stdout;
-
-    strncpy(buffer_input, str, BUFFER_TEXT - 1);
-    buffer_input[BUFFER_TEXT - 1] = '\0';
+    if (output_file != stdout) output_stream = output_file;
     int pos = 0;
-    buffer_output[0] = '\0';
-    for (int j = 0; j < strlen(buffer_input); j++){
-        const char *morse_code = char_to_morse(buffer_input[j]);
-        if (morse_code == NULL) continue;
-        int k = 0;
-        while (morse_code[k] != '\0' && pos < BUFFER_MORSE -2){
-            buffer_output[pos++] = morse_code[k++];
+    int p2 = 0;
+
+    for (int j = 0; j < str_len; j++){
+        //printf("Position %d: '%c' (ASCII: %d)\n", j, str[j], (int)str[j]);
+        if (str[j] == '-' || str[j] == '.'){
+            str_whole_morse[pos] = str[j];
+            space_count = 0;
+            pos++;
+            //printf("LENGTH: %ld ", strlen(str_whole_morse));
+            continue;
         }
-        if (pos < BUFFER_MORSE - 1 && morse_code[k-1] != ' ') {
-            buffer_output[pos++] = ' ';
+        if (str[j] != '\n' || str[j] != '\r')space_count++;
+
+        if (strlen(str_whole_morse) > 0){
+            str_whole_morse[pos] = '\0';
+            pos = 0;
+            const char morse_char = morse_to_char(str_whole_morse);
+            str_whole_morse[0] = '\0';
+            if (morse_char != ' '){
+                buffer_output[p2] = morse_char;
+                p2++;
+            } 
         }
-        buffer_output[pos] = '\0';  
+        if(space_count == 3){
+        strcat(buffer_output, " ");
+        p2++;
+        }
     }
-    if (pos > 0){
-        fprintf(output_stream, "%s\n", buffer_output);
-        //fflush(output_stream);
-    } 
-    
+    strcat(buffer_output, "\0");
+    fprintf(output_stream, "%s\n", buffer_output);
 }
+    
+
+    
+
 
     
 

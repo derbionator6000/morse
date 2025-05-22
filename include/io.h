@@ -13,7 +13,7 @@ typedef enum {
 int is_pipe_input();
 int is_direct_input();
 int is_file_input();
-
+char *read_file(char *file);
 int input_source();
 
 #endif
