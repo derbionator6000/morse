@@ -10,6 +10,8 @@ typedef enum {
     INPUT_FILE
 } InputSource;
 
+
+void check_status(char *filename, char *mode);
 int is_pipe_input();
 int is_direct_input();
 int is_file_input();

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <options.h> //OWN 
+#include <options.h> 
 
 const char * const HELPTEXT = {
     "Usage: ./morse [OPTIONS] [ARGUMENT] ...\n" \
@@ -12,16 +12,22 @@ const char * const HELPTEXT = {
     "OPTIONS: \n\n" \
     "-h, --help                 Display this information\n" \
     "    --programmer-info      Output developers information\n" \
-    "-o, --out                  takes <file> as argument\n" \
-    "                           funnels output into file\n" \
+    "-o, --out                  takes <file> as mandatory argument\n" \
+    "                           funnels output into file if possible\n" \
+    "                           if not used, stdout is selected\n" \
     "-e, --encode               encodes text into morse code\n" \
-    "                           optional arguments: <file>, <string> example:\n" \
-    "                           NOT FINISHED YET, DECODE NOT EITHER\n" \
-    "                           supports piping\n" \
-    "-d, --decode               translates morse into text\n" \
-    "                           optional arguments: <file>, <string>\n" \
-    "                           supports piping\n" \
-    "\n" \
+    "                           symbols are seperated by a space, a word by three spaces\n" \
+    "                           ./morse -e <text_file> or via pipe (| or <<<)\n" \
+    "                           ./morse -e <<< text\n" \
+    "                           cat Text | ./morse -e\n" \
+    "                           encodes unknown letters into *\n" \
+    "-d, --decode               decodes morse into text\n" \
+    "                           ./morse -d <morse_file> or via pipe (| or <<<)\n" \
+    "                           ./morse -d <<< ... - .. -. --. \n" \
+    "                           cat morse_file | ./morse -d\n" \
+    "                           decodes only into capital letters\n" \
+    "                           ignores unknown symbols, e.g. € == * * *\n\n" \
+
     "For more information contact Robin.Bardeleben@gmx.de"
 };
 
@@ -29,7 +35,7 @@ const char * const PROGRAMMER_INFO = {
     "\"surname\" : \"Robin\"\n" \
     "\"name\" : \"von Bardeleben\"\n" \
     "\"branch_of_study\" : \"TIT\"\n" \
-    "\"contact\" : \"Robin.Bardeleben@gmx.de\"\n" \
+    "\"contact\" : \"Robin.Bardeleben@gmx.de\"" \
 };
 
 //Warning Text for decode/encode used together

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <morse.h> //OWN
+#include <morse.h> 
 #include <io.h>
 
 const MorsePack morse_table[] = {
@@ -176,6 +176,7 @@ void standard_text_to_morse(char *str, FILE *output_file){
     int pos = 0;
     buffer_output[0] = '\0';
     for (int j = 0; j < str_len; j++){
+        if (str[j] == '\n' || str[j] == '\r') continue;
         const char *morse_code = char_to_morse(str[j]);
         if (morse_code == NULL) continue;
         int k = 0;
@@ -185,10 +186,11 @@ void standard_text_to_morse(char *str, FILE *output_file){
         if (pos < output_size - 1 && morse_code[k-1] != ' ') {
             buffer_output[pos++] = ' ';
         }
-        buffer_output[pos] = '\0';  
+        //buffer_output[pos] = '\0';  
     }
     if (pos > 0){
-        fprintf(output_stream, "%s\n", buffer_output);
+        buffer_output[pos] = '\0'; 
+        fprintf(output_stream, "%s", buffer_output);
     } 
     
 }
@@ -209,7 +211,7 @@ const char *char_to_morse(char c){
     c = toupper(c);
     if (c == '\n' || c == '\r')
     {
-        return "  \0";
+        return NULL;
          //signalisiert string Ende
     }
     if (c == ' ') return "  ";
@@ -278,7 +280,7 @@ void standard_morse_to_text(char *str, FILE *output_file){
         }
     }
     strcat(buffer_output, "\0");
-    fprintf(output_stream, "%s\n", buffer_output);
+    fprintf(output_stream, "%s", buffer_output);
 }
     
 
